@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    status=debug 可以查看log4j的装配过程，默认为OFF
+    monitorInterval：重新自动加载配置的间隔时间，单位秒，不得少于5秒
+ -->
+<configuration status="OFF" monitorInterval="1800">
+    <Properties>
+        <Property name="INFO_NAME">info</Property>
+        <Property name="MY_NAME">my</Property>
+        <Property name="ERROR_NAME">error</Property>
+        <Property name="LOG_HOME">logs</Property>
+        <Property name="PATTERN">%d [%t] %-5p %C (%F:%L) - %m%n</Property>
+    </Properties>
+
+    <Appenders>
+        <!--控制台输出-->
+        <Console name="Console" target="SYSTEM_OUT">
+            <ThresholdFilter level="debug" onMatch="ACCEPT" onMismatch="DENY" />
+            <PatternLayout pattern="${PATTERN}" />
+        </Console>
+
+        <!--info日志输出:RollingRandomAccessFile存储日志并进行归档-->
+        <RollingRandomAccessFile name="info-log" fileName="${LOG_HOME}/${INFO_NAME}.log"
+                                 filePattern="${LOG_HOME}/${date:yyyy-MM}/${FILE_NAME}-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout
+                    pattern="${PATTERN}" />
+            <!--配置过滤器：存储info级别的日志，匹配则接受，不匹配则拒绝-->
+            <Filters>
+                <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="20MB" />
+            </Policies>
+            <DefaultRolloverStrategy max="20"/>
+        </RollingRandomAccessFile >
+
+        <!--append：若为false，则每次执行时清空文件,可用于临时测试文件使用，若为true则保存到相应的日志文件中，无法进行归档-->
+        <File name="error-log" fileName="${LOG_HOME}/${ERROR_NAME}.log" append="false">
+            <ThresholdFilter level="error" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout pattern="${PATTERN}"/>
+        </File>
+
+
+        <!--skynet日志输出-->
+        <RollingRandomAccessFile name="my" fileName="${LOG_HOME}/${MY_NAME}.log"
+                                 filePattern="${LOG_HOME}/${date:yyyy-MM}/${FILE_NAME}-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout
+                    pattern="${PATTERN}" />
+            <Policies>
+                <SizeBasedTriggeringPolicy size="20MB" />
+            </Policies>
+            <DefaultRolloverStrategy max="20"/>
+        </RollingRandomAccessFile >
+    </Appenders>
+
+    <Loggers>
+        <Logger name="com.skynet.task.ApplicationTests" level="debug">
+            <AppenderRef ref="my"/>
+        </Logger>
+        <Root level="debug">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="info-log"/>
+            <AppenderRef ref="error-log"/>
+        </Root>
+    </Loggers>
+</configuration>

@@ -25,7 +25,7 @@ public class UserController {
         return r;
     }
 
-    @ApiOperation(value = "创建用户", notes = "根据User对象创建用户")
+    @ApiOperation(value = "创建用户", notes = "根据常String->LongUser对象创建用户")
     @ApiImplicitParam(name = "user", value = "用户详细实体user", required = true, dataType = "User")
     @RequestMapping(value = "", method = RequestMethod.POST)
     public String postUser(@RequestBody User user) {
@@ -34,7 +34,7 @@ public class UserController {
     }
 
     /**
-     * 注意：这里的id参数必须添加paramType="path"，标注为路径参数，否则会出现类型转换异常String->Long
+     * 注意：这里的id参数必须添加paramType="path"，标注为路径参数，否则会出现类型转换异
      *
      * @param id
      * @return
